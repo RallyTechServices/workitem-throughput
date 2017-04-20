@@ -10,9 +10,9 @@ This app shows work item (User Stories and Defects) throughput either as a *coun
 * Task Estimate Total
 * Task Actual Total 
 
-This app uses the Accepted Date to determine what date bucket to include the work item into.  This app does NOT use the Lookback API.  
+This app uses the Accepted Date to determine what date bucket to include the work item into.  This app does NOT use the Lookback API.    
 
-Only work items that do not have children will be included in the throughput sum or counts.  Stories that are parents to other stories will not be included.  
+Only work items that do not have children will be included in the throughput sum or counts.  Stories that are parents to other stories will not be included.    
 
 The current increment will not be included in the chart.  For example, if the timebox granularity = "Monthly" and #Timeboxes = 3 and the current date is April 15, the through put will be shown 
 for the following month buckets:  
@@ -25,9 +25,9 @@ Throughput data will not be shown for the current (incomplete) month.
 ## App Settings 
 
 #### Throughput Measure
-How to measure throughput.  The options are:  Count, Plan Estimate, Task Actual Total and Task Estimate Total.  
-If Count is selected, the throughput will be the count of work items (without children)
-If Plan Estimate, Task Actual Total or Task Estimate Total are selected, then the throughput will be the sum of the field for all work items without children.  
+How to measure throughput.  The options are:  Count, Plan Estimate, Task Actual Total and Task Estimate Total.    
+If Count is selected, the throughput will be the count of work items (without children)  
+If Plan Estimate, Task Actual Total or Task Estimate Total are selected, then the throughput will be the sum of the field for all work items without children.    
 
 #### Timebox Granularity
 This determines whether throughput will be bucketed into Weeks, Months or Quarters 
