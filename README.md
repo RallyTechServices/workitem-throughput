@@ -22,17 +22,17 @@ Mar-17
 Throughput data will not be shown for the current (incomplete) month.  
 
 
-##App Settings 
+## App Settings 
 
-####Throughput Measure
+#### Throughput Measure
 How to measure throughput.  The options are:  Count, Plan Estimate, Task Actual Total and Task Estimate Total.  
 If Count is selected, the throughput will be the count of work items (without children)
 If Plan Estimate, Task Actual Total or Task Estimate Total are selected, then the throughput will be the sum of the field for all work items without children.  
 
-####Timebox Granularity
+#### Timebox Granularity
 This determines whether throughput will be bucketed into Weeks, Months or Quarters 
 
-#### # Timeboxes
+#### #Timeboxes
 This determines how many timeboxes in the past throughput will be calculated for.  This does not include the current bucket.  
 
 
