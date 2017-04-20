@@ -1,5 +1,5 @@
 # Work Item Throughput  
-![ScreenShot](https://travis-ci.org/kcorkan/workitem-throughput.svg?branch=master)
+![ScreenShot](https://travis-ci.org/RallyTechServices/workitem-throughput.svg?branch=master)
 
 ## Summary/Description
 
