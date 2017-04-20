@@ -1,4 +1,4 @@
-#Work Item Throughput
+#Work Item Throughput  ![ScreenShot](https://travis-ci.org/kcorkan/workitem-throughput.svg?branch=master)
 
 ## Summary/Description
 
