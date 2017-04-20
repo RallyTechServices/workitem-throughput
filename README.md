@@ -15,11 +15,11 @@ This app uses the Accepted Date to determine what date bucket to include the wor
 Only work items that do not have children will be included in the throughput sum or counts.  Stories that are parents to other stories will not be included.  
 
 The current increment will not be included in the chart.  For example, if the timebox granularity = "Monthly" and #Timeboxes = 3 and the current date is April 15, the through put will be shown 
-for the following month buckets:
-Jan-17
-Feb-17
-Mar-17
-Throughput data will not be shown for the current (incomplete) month.  
+for the following month buckets:  
+Jan-17  
+Feb-17  
+Mar-17  
+Throughput data will not be shown for the current (incomplete) month.    
 
 
 ## App Settings 
