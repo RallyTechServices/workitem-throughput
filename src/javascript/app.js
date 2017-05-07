@@ -17,14 +17,86 @@ Ext.define("workitem-throughput", {
             throughputMeasure: 'PlanEstimate',
             timeboxGranularity: 'week',
             numberTimeboxes: 6,
-            artifactModels: ['Defect','UserStory']
+            artifactModels: ['Defect','UserStory'],
+            allowSettingsOverride: true //If this is false, then the settings won't show on the front
         }
     },
 
+    MAX_TIMEBOXES: 26,
+
     launch: function() {
+        this.initializeApp();
+    },
+    initializeApp: function() {
+
+        if (this.getAllowSettingsOverride()) {
+
+            this.removeAll();
+            this.suspendEvents();
+            var selectorCt = this.add({
+                xtype: 'container',
+                layout: 'hbox'
+            });
+
+            var g = selectorCt.add({
+                xtype: 'rallycombobox',
+                fieldLabel: 'Timebox Granularity',
+                labelAlign: 'right',
+                name: 'timeboxGranularity',
+                itemId: 'timeboxGranularity',
+                editable: false,
+                store: Ext.create('Rally.data.custom.Store', {
+                    data: this.getGranularityData(),
+                    fields: ['name', 'value']
+                }),
+                allowNoEntry: false,
+                displayField: 'name',
+                valueField: 'value',
+                stateful: true,
+                margin: 5,
+                stateId: 'granularity-data'
+            });
+
+            var n = selectorCt.add({
+                xtype: 'rallynumberfield',
+                fieldLabel: '# Timeboxes',
+                labelAlign: 'right',
+                itemId: 'numberTimeboxes',
+                name: 'numberTimeboxes',
+                minValue: 1,
+                maxValue: this.MAX_TIMEBOXES,
+                stateful: true,
+                margin: 5,
+                stateId: 'number-timeboxes'
+            });
+
+            g.on('change', this.updateDisplay, this);
+            n.on('change', this.updateDisplay, this);
+        }
         this.updateDisplay();
     },
     updateDisplay: function(){
+
+        if (this.down('rallychart')){
+            this.down('rallychart').destroy();
+        }
+
+        if (this.down('#messageBox')) {
+            this.down('#messageBox').destroy();
+        }
+
+        this.logger.log('updateDisplay', this.getNumTimeboxes(), this.getTimeboxGranularity());
+
+        if (!this.getNumTimeboxes() || !this.getTimeboxGranularity()){
+
+            this.add({
+                xtype: 'container',
+                itemId: 'messageBox',
+                html:  '<div class="no-data-container"><div class="secondary-message">Please select a granularity and # timeboxes to calculate throughput for.</div></div>'
+            });
+            return;
+        }
+
         this.setLoading(true);
         this.fetchWsapiArtifactRecords({
             models: this.getArtifactModels(),
@@ -37,11 +109,30 @@ Ext.define("workitem-throughput", {
             scope: this
         }).always(function(){ this.setLoading(false);}, this);
     },
-    buildChart: function(records){
-        this.logger.log('buildChart', records);
-        var numTimeboxes = this.getSetting('numberTimeboxes'),
-            timeboxGranularity = this.getSetting('timeboxGranularity');
+    getNumTimeboxes: function(){
 
+        if (this.getAllowSettingsOverride()){
+            return this.down('#numberTimeboxes') &&
+                this.down('#numberTimeboxes').getValue() || null;
+        }
+        return this.getSetting('numberTimeboxes');
+
+    },
+    getAllowSettingsOverride: function(){
+        return this.getSetting('allowSettingsOverride');
+    },
+    getTimeboxGranularity: function(){
+
+        if (this.getAllowSettingsOverride()){
+            return this.down('#timeboxGranularity') &&
+                this.down('#timeboxGranularity').getValue() || null;
+        }
+        return this.getSetting('timeboxGranularity');
+    },
+    buildChart: function(records){
+        var numTimeboxes = this.getNumTimeboxes(),
+            timeboxGranularity = this.getTimeboxGranularity();
+        this.logger.log('buildChart: record count, numTimeboxes, TimeboxGranularity', records.length, numTimeboxes, timeboxGranularity);
         var userStories = Ext.Array.filter(records, function(r){ return r.get('_type') === 'hierarchicalrequirement'; }),
             userStoryData = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData(timeboxGranularity,numTimeboxes,userStories,this.getThroughputMeasure(),'AcceptedDate');
 
@@ -75,7 +166,10 @@ Ext.define("workitem-throughput", {
 
         this.add({
             xtype:'rallychart',
+            chartColors: ['#f9a814','#21A2E0'],
+            context: this.getContext(),
             chartConfig: this.getChartConfig(),
+            loadMask: false,
             chartData: {
                 series: series,
                 categories: categories
@@ -202,7 +296,7 @@ Ext.define("workitem-throughput", {
         return ['ObjectID','AcceptedDate','DirectChildrenCount', this.getThroughputMeasure()];
     },
     getArtifactFilters: function(){
-        var numTimeboxes = this.getSetting('numberTimeboxes'),
+        var numTimeboxes = this.getNumTimeboxes(),
             timeboxGranularity = this.getTimeboxGranularity();
 
         var startDate = RallyTechServices.workItemThroughput.utils.FlowCalculator.getStartDateBoundary(timeboxGranularity,numTimeboxes);
@@ -215,9 +309,6 @@ Ext.define("workitem-throughput", {
     },
     getThroughputMeasure: function(){
         return this.getSetting('throughputMeasure');
-    },
-    getTimeboxGranularity: function(){
-        return this.getSetting('timeboxGranularity');
     },
     fetchWsapiArtifactRecords: function(config){
         var deferred = Ext.create('Deft.Deferred');
@@ -270,19 +361,27 @@ Ext.define("workitem-throughput", {
             xtype: 'rallycombobox',
             fieldLabel: 'Throughput Measure',
             labelAlign: 'right',
+            labelWidth: 200,
             name: 'throughputMeasure',
-            store:  Ext.create('Rally.data.custom.Store', {
+            store: Ext.create('Rally.data.custom.Store', {
                 data: this.getThroughputMeasureData(),
-                fields: ['name','value']
+                fields: ['name', 'value']
             }),
             allowNoEntry: true,
             noEntryText: 'Count',
             displayField: 'name',
             valueField: 'value'
         },{
+            xtype: 'rallycheckboxfield',
+            fieldLabel: 'Allow settings change by users',
+            labelAlign: 'right',
+            labelWidth: 200,
+            name: 'allowSettingsOverride'
+        },{
             xtype: 'rallycombobox',
             fieldLabel: 'Timebox Granularity',
             labelAlign: 'right',
+            labelWidth: 200,
             name: 'timeboxGranularity',
             store: Ext.create('Rally.data.custom.Store', {
                 data: this.getGranularityData(),
@@ -295,10 +394,12 @@ Ext.define("workitem-throughput", {
             xtype: 'rallynumberfield',
             fieldLabel: '# Timeboxes',
             labelAlign: 'right',
+            labelWidth: 200,
             name: 'numberTimeboxes',
             minValue: 1,
-            maxValue: 52
+            maxValue: this.MAX_TIMEBOXES
         }];
+
     },
     getOptions: function() {
         return [
