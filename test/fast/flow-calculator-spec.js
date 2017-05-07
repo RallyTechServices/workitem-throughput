@@ -97,7 +97,8 @@ describe("Flow Calculator", function() {
             Ext.create("mockStory", {PlanEstimate: 1, AcceptedDate: new Date('03/02/2017') }),
             Ext.create("mockStory", {PlanEstimate: 7, AcceptedDate: new Date('04/02/2017') })
         ];
-        var data = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData('month',5,records,'PlanEstimate','AcceptedDate');
+        var endDate = new Date('04/15/2017');
+        var data = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData('month',5,records,'PlanEstimate','AcceptedDate', endDate);
         expect(data[0]).toEqual(0);
         expect(data[1]).toEqual(0);
         expect(data[2]).toEqual(4);
@@ -114,7 +115,8 @@ describe("Flow Calculator", function() {
             Ext.create("mockStory", {PlanEstimate: 1, AcceptedDate: new Date('03/02/2017') }),
             Ext.create("mockStory", {PlanEstimate: 7, AcceptedDate: new Date('04/02/2017') })
         ];
-        var data = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData('month',5,records,'PlanEstimate','AcceptedDate');
+        var endDate = new Date('04/15/2017');
+        var data = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData('month',5,records,'PlanEstimate','AcceptedDate', endDate);
         expect(data[0]).toEqual(0);
         expect(data[1]).toEqual(0);
         expect(data[2]).toEqual(4);

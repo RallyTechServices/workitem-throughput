@@ -1,5 +1,5 @@
 # Work Item Throughput  
-![ScreenShot](https://travis-ci.org/kcorkan/workitem-throughput.svg?branch=master)
+![ScreenShot](https://travis-ci.org/RallyTechServices/workitem-throughput.svg?branch=master)
 
 ## Summary/Description
 
@@ -28,6 +28,10 @@ Throughput data will not be shown for the current (incomplete) month.
 How to measure throughput.  The options are:  Count, Plan Estimate, Task Actual Total and Task Estimate Total.    
 If Count is selected, the throughput will be the count of work items (without children)  
 If Plan Estimate, Task Actual Total or Task Estimate Total are selected, then the throughput will be the sum of the field for all work items without children.    
+
+#### Allow settings change by users 
+If this is checked, then the non-admin users can change the Granularity and the # timeboxes on the front of the app.
+If this is not checked, then the granularity and # timeboxes selectors will not be shown on the front of the app and the settings can only be changed via the App Settings.  
 
 #### Timebox Granularity
 This determines whether throughput will be bucketed into Weeks, Months or Quarters 

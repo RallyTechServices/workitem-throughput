@@ -13,7 +13,7 @@ describe("Example test set", function() {
         var app = Rally.test.Harness.launchApp('workitem-throughput');
 
         expect(app.getSettingsFields()).toBeDefined();
-        expect(app.getSettingsFields().length).toBe(3);
+        expect(app.getSettingsFields().length).toBe(4);
 
         expect(app.getSetting('numberTimeboxes')).toBe(app.config.defaultSettings.numberTimeboxes);
 
