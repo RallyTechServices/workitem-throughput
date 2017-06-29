@@ -166,7 +166,7 @@ Ext.define("workitem-throughput", {
 
         this.add({
             xtype:'rallychart',
-            chartColors: ['#f9a814','#21A2E0'],
+            chartColors: ['#21A2E0','#f9a814'],
             context: this.getContext(),
             chartConfig: this.getChartConfig(),
             loadMask: false,
@@ -410,14 +410,14 @@ Ext.define("workitem-throughput", {
             }
         ];
     },
-    
+
     _launchInfo: function() {
         if ( this.about_dialog ) { this.about_dialog.destroy(); }
         this.about_dialog = Ext.create('Rally.technicalservices.InfoLink',{});
     },
-    
+
     isExternal: function(){
         return typeof(this.getAppId()) == 'undefined';
     }
-    
+
 });
