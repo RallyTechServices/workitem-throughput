@@ -136,13 +136,27 @@ Ext.define("workitem-throughput", {
        var data = chart && chart.getChartData();
        this.logger.log('_export', data);
 
+       var timebox = this.getTimeboxGranularity(),
+       workitems = _.pluck(data.series, 'name');
+
        var csv = [];
-       var headers = ['Work Item Type'].concat(data.categories);
+       var headers = [timebox].concat(workitems).concat('Total');
+       //var headers = ['Work Item Type'].concat(data.categories);
        csv.push(headers.join(',')); //add headers
-       _.each(data.series, function(s){
-          var row = [s.name].concat(s.data);
-          csv.push(row.join(','));
-       });
+       for (var i=0; i< data.categories.length; i++){
+           row = [data.categories[i]];
+           var total = 0;
+           for (var j=0; j<data.series.length; j++){
+              total += data.series[j].data[i];
+              row.push(data.series[j].data[i]);
+           }
+           row.push(total);
+           csv.push(row.join(','));
+       }
+       // _.each(data.series, function(s){
+       //    var row = [s.name].concat(s.data);
+       //    csv.push(row.join(','));
+       // });
        csv = csv.join('\r\n');
        this.logger.log('export ' + csv);
        var fileName = Ext.String.format("workitem-throughput-{0}.csv", Rally.util.DateTime.format(new Date(), 'Y-m-d-h-i-s'));
