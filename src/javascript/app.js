@@ -70,10 +70,28 @@ Ext.define("workitem-throughput", {
                 stateId: 'number-timeboxes'
             });
 
+            this.addExportButton(selectorCt);
+
+
             g.on('change', this.updateDisplay, this);
             n.on('change', this.updateDisplay, this);
+        } else {
+           this.addExportButton(this);
         }
+
+
+
         this.updateDisplay();
+    },
+    addExportButton: function(ct){
+      ct.add({
+        xtype:'rallybutton',
+        iconCls: 'icon-export',
+        cls: 'rly-small secondary',
+        handler: this._export,
+        margin: 5,
+        scope: this
+      });
     },
     updateDisplay: function(){
 
@@ -109,6 +127,27 @@ Ext.define("workitem-throughput", {
             scope: this
         }).always(function(){ this.setLoading(false);}, this);
     },
+    _export: function(){
+       var chart = this.down('rallychart');
+       if (!chart){
+          this.showErrorNotification("No chart data to export.");
+          return;
+       }
+       var data = chart && chart.getChartData();
+       this.logger.log('_export', data);
+
+       var csv = [];
+       var headers = ['Work Item Type'].concat(data.categories);
+       csv.push(headers.join(',')); //add headers
+       _.each(data.series, function(s){
+          var row = [s.name].concat(s.data);
+          csv.push(row.join(','));
+       });
+       csv = csv.join('\r\n');
+       this.logger.log('export ' + csv);
+       var fileName = Ext.String.format("workitem-throughput-{0}.csv", Rally.util.DateTime.format(new Date(), 'Y-m-d-h-i-s'));
+       CATS.workitemThroughput.utils.Toolbox.saveAs(csv, fileName);
+    },
     getNumTimeboxes: function(){
 
         if (this.getAllowSettingsOverride()){
@@ -132,6 +171,7 @@ Ext.define("workitem-throughput", {
     buildChart: function(records){
         var numTimeboxes = this.getNumTimeboxes(),
             timeboxGranularity = this.getTimeboxGranularity();
+
         this.logger.log('buildChart: record count, numTimeboxes, TimeboxGranularity', records.length, numTimeboxes, timeboxGranularity);
         var userStories = Ext.Array.filter(records, function(r){ return r.get('_type') === 'hierarchicalrequirement'; }),
             userStoryData = RallyTechServices.workItemThroughput.utils.FlowCalculator.getBucketData(timeboxGranularity,numTimeboxes,userStories,this.getThroughputMeasure(),'AcceptedDate');
@@ -175,7 +215,6 @@ Ext.define("workitem-throughput", {
                 categories: categories
             }
         });
-
 
     },
     getChartConfig: function(){
